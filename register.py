@@ -3,7 +3,6 @@
 
 import sys
 import requests
-import random
 
 from rich.theme import Theme
 from rich.console import Console
@@ -19,14 +18,14 @@ def register(session, url, cookies, payload, module):
         payload[obj[0]] = obj[1]
     rep = session.post(url, cookies=payload)
     if (rep.status_code == 200):
-        console.log("Registration succeed to " + module, theme="success")
+        console.log("Succeessfully registerd to " + module, style="success")
         return True
     console.log("Failed to register to " + module + " (code " + str(rep.status_code) + ")", style="error")
     return False
 
 
 def main(args):
-    cookies = args[args.index("-c") + 1].replace(' ', '').split(";")  # ex : "foo=bar; name=Jhon; lastname=Doe"
+    cookies = args[args.index("-c") + 1].replace(' ', '').split(";")
     modules = args[1:args.index("-c")]
     payload = {}
     session = requests.Session()
@@ -54,4 +53,7 @@ if __name__ == "__main__":
         print("USAGE:\n\t./register <module_id> -c <cookies> [-t <time>]\n\nEXAMPLE\n\t./register M-BDX-001 M-PRO-045 M-TRV-014 M-PRO-002 -c \"foo=bar; name=Jhon; lastname=Doe\"")
         sys.exit(84)
     else:
-        main(sys.argv)
+        try:
+            main(sys.argv)
+        except KeyboardInterrupt:
+            console.log("Manual interrupt", style="error")
