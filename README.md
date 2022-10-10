@@ -14,10 +14,12 @@ EXAMPLE
         ./register M-BDX-001 M-PRO-045 M-TRV-014 M-PRO-002 -c "foo=bar; name=Jhon; lastname=Doe"
 ```
 
-> Watch out the number of requests your're sending ("-t" option will come soon), you could be banned !
+the default timer is 120 sec.
+
+> Watch out the number of requests your're sending, you could be banned !
 
 ## Install
 
 ```bash
-mv register.py $HOME/bin/register && chmod +x $HOME/bin/register
+$ mv register.py $HOME/bin/register && chmod +x $HOME/bin/register
 ```
