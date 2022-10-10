@@ -11,6 +11,7 @@ from time import sleep
 theme = Theme({"success": "green", "error": "bold red", "neutral": "white"})
 console = Console(theme=theme)
 
+token = "aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g/dj1kUXc0dzlXZ1hjUQ=="
 
 def register(session, url, cookies, payload, module):
     for elem in cookies:
@@ -20,7 +21,10 @@ def register(session, url, cookies, payload, module):
     if (rep.status_code == 200):
         console.log("Succeessfully registerd to " + module, style="success")
         return True
-    console.log("Failed to register to " + module + " (code " + str(rep.status_code) + ")", style="error")
+    if (rep.status_code == 404):
+        console.log("This is not the module you are looking for.", style="error")
+    else:
+        console.log("Failed to register to " + module + " (code " + str(rep.status_code) + ")", style="error")
     return False
 
 
@@ -42,6 +46,7 @@ def main(args):
 
                 if register(session, url, cookies, payload, module):
                     modules.remove(module)
+                sleep(0.2)
             if (len(modules) == 0):
                 break
             sleep(time)
