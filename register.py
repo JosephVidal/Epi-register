@@ -13,6 +13,7 @@ console = Console(theme=theme)
 
 token = "aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g/dj1kUXc0dzlXZ1hjUQ=="
 
+
 def register(session, url, cookies, payload, module):
     for elem in cookies:
         obj = elem.split('=')
@@ -34,10 +35,11 @@ def main(args):
     payload = {}
     session = requests.Session()
     time = float(args[args.index("-t") + 1]) if "-t" in args else 120
+    delay = float(args[args.index("-d") + 1]) if "-d" in args else 0.5
     step = 0
 
     console.log(f"Timer: {time} seconds", style="neutral")
-    with console.status("[bold green]Progressing...") as status:
+    with console.status("[bold green]Progressing..."):
         while 1:
             step = step + 1
             console.log("try " + str(step), style="success")
@@ -46,7 +48,7 @@ def main(args):
 
                 if register(session, url, cookies, payload, module):
                     modules.remove(module)
-                sleep(0.2)
+                sleep(delay)
             if (len(modules) == 0):
                 break
             sleep(time)
@@ -54,8 +56,8 @@ def main(args):
 
 
 if __name__ == "__main__":
-    if len(sys.argv) < 3 or not "-c" in sys.argv:
-        print("USAGE:\n\t./register <module_id> -c <cookies> [-t <time>]\n\nEXAMPLE\n\t./register M-BDX-001 M-PRO-045 M-TRV-014 M-PRO-002 -c \"foo=bar; name=Jhon; lastname=Doe\"")
+    if len(sys.argv) < 4 or "-c" not in sys.argv:
+        print("USAGE:\n\t./register <module_id> -c <cookies> [-t <time>] [-d <delay>]\n\nEXAMPLE\n\t./register M-BDX-001 M-PRO-045 M-TRV-014 M-PRO-002 -c \"foo=bar; name=Jhon; lastname=Doe\" -d 0.1")
         sys.exit(84)
     else:
         try:
