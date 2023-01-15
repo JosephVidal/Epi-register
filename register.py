@@ -19,6 +19,9 @@ def register(session, url, cookies, payload, module):
         obj = elem.split('=')
         payload[obj[0]] = obj[1]
     rep = session.post(url, cookies=payload)
+    if (rep.status_code == 429):
+        console.log("You have been blacklisted", style="error")
+        exit(84)
     if (rep.status_code == 200):
         console.log("Succeessfully registerd to " + module, style="success")
         return True
@@ -44,7 +47,7 @@ def main(args):
             step = step + 1
             console.log("try " + str(step), style="success")
             for module in modules:
-                url = "https://intra.epitech.eu/module/2022/" + module + "/PAR-9-2/register?format=json"
+                url = "https://intra.epitech.eu/module/2022/" + module + "/register?format=json"
 
                 if register(session, url, cookies, payload, module):
                     modules.remove(module)
@@ -57,7 +60,7 @@ def main(args):
 
 if __name__ == "__main__":
     if len(sys.argv) < 4 or "-c" not in sys.argv:
-        print("USAGE:\n\t./register <module_id> -c <cookies> [-t <time>] [-d <delay>]\n\nEXAMPLE\n\t./register M-BDX-001 M-PRO-045 M-TRV-014 M-PRO-002 -c \"foo=bar; name=Jhon; lastname=Doe\" -d 0.1")
+        print("USAGE:\n\t./register <module_id> -c <cookies> [-t <time>] [-d <delay>]\n\nEXAMPLE\n\t./register M-BDX-001/PAR-9-2 M-PRO-045/PAR-9-2 M-TRV-014/PAR-9-2 M-PRO-002/PAR-9-2 -c \"foo=bar; name=Jhon; lastname=Doe\" -d 0.1")
         sys.exit(84)
     else:
         try:
