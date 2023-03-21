@@ -8,10 +8,10 @@ Automate your registration to your favorite modules and save time for your aqua-
 
 ```txt
 USAGE:
-        ./register <module_id> -c <cookies> [-t <time>]
+        ./register <module_id> -c <cookies> -y <year> [-t <time>]
 
 EXAMPLE
-        ./register M-BDX-001 M-PRO-045 M-TRV-014 M-PRO-002 -c "foo=bar; name=Jhon; lastname=Doe"
+        ./register M-BDX-001 M-PRO-045 M-TRV-014 M-PRO-002 -c -y 2022 "foo=bar; name=Jhon; lastname=Doe"
 ```
 
 the default timer is 120 sec.
