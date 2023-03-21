@@ -39,6 +39,7 @@ def main(args):
     session = requests.Session()
     time = float(args[args.index("-t") + 1]) if "-t" in args else 120
     delay = float(args[args.index("-d") + 1]) if "-d" in args else 0.5
+    year = args[args.index("-y") + 1]
     step = 0
 
     console.log(f"Timer: {time} seconds", style="neutral")
@@ -47,7 +48,7 @@ def main(args):
             step = step + 1
             console.log("try " + str(step), style="success")
             for module in modules:
-                url = "https://intra.epitech.eu/module/2022/" + module + "/register?format=json"
+                url = "https://intra.epitech.eu/module/" + year + "/" + module + "/register?format=json"
 
                 if register(session, url, cookies, payload, module):
                     modules.remove(module)
@@ -59,8 +60,8 @@ def main(args):
 
 
 if __name__ == "__main__":
-    if len(sys.argv) < 4 or "-c" not in sys.argv:
-        print("USAGE:\n\t./register <module_id> -c <cookies> [-t <time>] [-d <delay>]\n\nEXAMPLE\n\t./register M-BDX-001/PAR-9-2 M-PRO-045/PAR-9-2 M-TRV-014/PAR-9-2 M-PRO-002/PAR-9-2 -c \"foo=bar; name=Jhon; lastname=Doe\" -d 0.1")
+    if len(sys.argv) < 6 or "-c" not in sys.argv or "-y" not in sys.argv:
+        print("USAGE:\n\t./register <module_id> -y <year> -c <cookies> [-t <time>] [-d <delay>]\n\nEXAMPLE\n\t./register M-BDX-001/PAR-9-2 M-PRO-045/PAR-9-2 M-TRV-014/PAR-9-2 M-PRO-002/PAR-9-2 -c \"foo=bar; name=Jhon; lastname=Doe\" -d 0.1")
         sys.exit(84)
     else:
         try:
