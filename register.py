@@ -8,6 +8,12 @@ from rich.theme import Theme
 from rich.console import Console
 from time import sleep
 
+EXIT_FAILURE = 84
+
+DEFAULT_TIME = 120
+DEFAULT_DELAY = 0.5
+MIN_ARGC = 6
+
 theme = Theme({"success": "green", "error": "bold red", "neutral": "white"})
 console = Console(theme=theme)
 
@@ -19,13 +25,13 @@ def register(session, url, cookies, payload, module):
         obj = elem.split('=')
         payload[obj[0]] = obj[1]
     rep = session.post(url, cookies=payload)
-    if (rep.status_code == 429):
+    if (rep.status_code == requests.codes.too_many):
         console.log("You have been blacklisted", style="error")
-        exit(84)
-    if (rep.status_code == 200):
+        exit(EXIT_FAILURE)
+    if (rep.status_code == requests.codes.ok):
         console.log("Succeessfully registerd to " + module, style="success")
         return True
-    if (rep.status_code == 404):
+    if (rep.status_code == requests.codes.not_found):
         console.log("This is not the module you are looking for.", style="error")
     else:
         console.log("Failed to register to " + module + " (code " + str(rep.status_code) + ")", style="error")
@@ -37,13 +43,13 @@ def main(args):
     modules = args[1:args.index("-c")]
     payload = {}
     session = requests.Session()
-    time = float(args[args.index("-t") + 1]) if "-t" in args else 120
-    delay = float(args[args.index("-d") + 1]) if "-d" in args else 0.5
+    time = float(args[args.index("-t") + 1]) if "-t" in args else DEFAULT_TIME
+    delay = float(args[args.index("-d") + 1]) if "-d" in args else DEFAULT_DELAY
     year = args[args.index("-y") + 1]
     step = 0
 
     console.log(f"Timer: {time} seconds", style="neutral")
-    with console.status("[bold green]Progressing..."):
+    with console.status("[bold green]Waiting for next try..."):
         while 1:
             step = step + 1
             console.log("try " + str(step), style="success")
@@ -60,9 +66,9 @@ def main(args):
 
 
 if __name__ == "__main__":
-    if len(sys.argv) < 6 or "-c" not in sys.argv or "-y" not in sys.argv:
+    if len(sys.argv) < MIN_ARGC or "-c" not in sys.argv or "-y" not in sys.argv:
         print("USAGE:\n\t./register <module_id> -y <year> -c <cookies> [-t <time>] [-d <delay>]\n\nEXAMPLE\n\t./register M-BDX-001/PAR-9-2 M-PRO-045/PAR-9-2 M-TRV-014/PAR-9-2 M-PRO-002/PAR-9-2 -c \"foo=bar; name=Jhon; lastname=Doe\" -d 0.1")
-        sys.exit(84)
+        sys.exit(EXIT_FAILURE)
     else:
         try:
             main(sys.argv)
