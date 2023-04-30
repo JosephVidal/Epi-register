@@ -15,18 +15,19 @@ pip3 install -r requirements.txt
 ## Usage
 
 ```txt
-USAGE:
-        ./register <module_id> -y <year> -c <cookies> [-t <time>] [-d <delay>]
+usage: register.py [-h] -c COOKIES -y YEAR [-t TIME] [-d DELAY] modules [modules ...]
 
-OPTIONS:
-  -h, --help    show this help message and exit
-  -t N          delay in sec between each try (default 120)
-  -d N          delay in sec between each request inside a try (default 0.5)
-  -c COOKIES    auth cookies for the requests
-  -y N          year of the module
+positional arguments:
+  modules
 
-EXAMPLE:
-        ./register M-BDX-001/PAR-9-2 M-PRO-045/PAR-9-2 M-TRV-014/PAR-9-2 M-PRO-002/PAR-9-2 -c "foo=bar; name=Jhon; lastname=Doe" -d 0.1
+options:
+  -h, --help            show this help message and exit
+  -c COOKIES, --cookies COOKIES
+                        auth cookies for the requests
+  -y YEAR, --year YEAR  year of the module
+  -t TIME, --time TIME  delay in sec between each try (default 120)
+  -d DELAY, --delay DELAY
+                        delay in sec between each request inside a try (default 0.5)
 ```
 
 > Watch out the number of requests your're sending, you could be banned !

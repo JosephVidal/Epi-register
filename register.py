@@ -1,8 +1,8 @@
 #! /usr/bin/env python3
 # coding: utf-8
 
-import sys
 import requests
+import argparse
 
 from rich.theme import Theme
 from rich.console import Console
@@ -13,17 +13,11 @@ EXIT_FAILURE = 84
 
 DEFAULT_TIME = 120
 DEFAULT_DELAY = 0.5
-MIN_ARGC = 6
 
 theme = Theme({"success": "green", "error": "bold red", "neutral": "white"})
 console = Console(theme=theme)
 
 token = "aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g/dj1kUXc0dzlXZ1hjUQ=="
-
-def helper():
-    print("USAGE:\n\t./register <module_id> -y <year> -c <cookies> [-t <time>] [-d <delay>]\n")
-    print("OPTIONS:\n  -h, --help\tshow this help message and exit\n  -t N\t\tdelay in sec between each try (default 120)\n  -d N\t\tdelay in sec between each request inside a try (default 0.5)\n  -c COOKIES\tauth cookies for the requests\n  -y N\t\tyear of the module\n")
-    print("EXAMPLE:\n\t./register M-BDX-001/PAR-9-2 M-PRO-045/PAR-9-2 M-TRV-014/PAR-9-2 M-PRO-002/PAR-9-2 -c \"foo=bar; name=Jhon; lastname=Doe\" -d 0.1")
 
 
 def register(session, url, cookies, payload, module):
@@ -37,6 +31,8 @@ def register(session, url, cookies, payload, module):
     if (rep.status_code == requests.codes.ok):
         console.log("Succeessfully registerd to " + module, style="success")
         return True
+    if (rep.status_code == requests.codes.unauthorized): # Useless because the intra uses 403 instead, but it's there in case of they improve it lmao
+        console.log("Invalid auth token.", style="error")
     if (rep.status_code == requests.codes.not_found):
         console.log("This is not the module you are looking for.", style="error")
     else:
@@ -45,41 +41,37 @@ def register(session, url, cookies, payload, module):
 
 
 def main(args):
-    cookies = args[args.index("-c") + 1].replace(' ', '').split(";")
-    modules = args[1:args.index("-c")]
+    cookies = args.c.split(";")
     payload = {}
     session = requests.Session()
-    time = float(args[args.index("-t") + 1]) if "-t" in args else DEFAULT_TIME
-    delay = float(args[args.index("-d") + 1]) if "-d" in args else DEFAULT_DELAY
-    year = args[args.index("-y") + 1]
     step = 0
 
-    console.log(f"Timer: {time} seconds", style="neutral")
-    with console.status("[bold green]Waiting for next try..."):
+    console.log(f"Timer: {args.t} seconds", style="neutral")
+    with console.status("[bold green]Progressing..."):
         while 1:
             step = step + 1
             console.log("try " + str(step), style="success")
-            for module in modules:
-                url = "https://intra.epitech.eu/module/" + year + "/" + module + "/register?format=json"
+            for elem in args.modules:
+                url = "https://intra.epitech.eu/module/" + args.y + "/" + elem + "/register?format=json"
 
-                if register(session, url, cookies, payload, module):
-                    modules.remove(module)
-                sleep(delay)
-            if (len(modules) == 0):
+                if register(session, url, cookies, payload, elem):
+                    args.modules.remove(elem)
+                sleep(args.d)
+            if (len(args.modules) == 0):
                 break
-            sleep(time)
+            sleep(args.t)
     console.log('Done!', style="success")
 
 
 if __name__ == "__main__":
-    if "-h" in sys.argv or "--help" in sys.argv:
-        helper()
-        sys.exit(EXIT_SUCCESS)
-    elif len(sys.argv) < MIN_ARGC or "-c" not in sys.argv or "-y" not in sys.argv:
-        helper()
-        sys.exit(EXIT_FAILURE)
-    else:
-        try:
-            main(sys.argv)
-        except KeyboardInterrupt:
-            console.log("Manual interrupt", style="error")
+    parser = argparse.ArgumentParser()
+    parser.add_argument('modules', type=str, nargs="+")
+    parser.add_argument('-c', "--cookies", type=str, help='auth cookies for the requests', required=True)
+    parser.add_argument('-y', "--year", type=str, help='year of the module', required=True)
+    parser.add_argument('-t', "--time", type=int, help='delay in sec between each try (default 120)', default=DEFAULT_TIME)
+    parser.add_argument('-d', "--delay", type=float, help='delay in sec between each request inside a try (default 0.5)', default=DEFAULT_DELAY)
+    args = parser.parse_args()
+    try:
+        main(args)
+    except KeyboardInterrupt:
+        console.log("Manual interrupt", style="error")
