@@ -7,6 +7,7 @@ Automate your registration to your favorite modules and save time for your aqua-
 ## Dependancies
 - Rich
 - Requests
+- argparse
 
 ```bash
 pip3 install -r requirements.txt
@@ -18,7 +19,7 @@ pip3 install -r requirements.txt
 usage: register.py [-h] -c COOKIES -y YEAR [-t TIME] [-d DELAY] modules [modules ...]
 
 positional arguments:
-  modules
+  modules               code of the module (ex: M-GAM-907/PAR-9-3)
 
 options:
   -h, --help            show this help message and exit

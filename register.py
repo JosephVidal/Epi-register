@@ -14,8 +14,15 @@ EXIT_FAILURE = 84
 DEFAULT_TIME = 120
 DEFAULT_DELAY = 0.5
 
-theme = Theme({"success": "green", "error": "bold red", "neutral": "white"})
+theme = Theme({
+    "success": "green",
+    "error": "bold red",
+    "neutral": "white",
+    "warning": "yellow"
+})
+
 console = Console(theme=theme)
+error_console = Console(stderr=True, theme=theme)
 
 token = "aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g/dj1kUXc0dzlXZ1hjUQ=="
 
@@ -26,17 +33,18 @@ def register(session, url, cookies, payload, module):
         payload[obj[0]] = obj[1]
     rep = session.post(url, cookies=payload)
     if (rep.status_code == requests.codes.too_many):
-        console.log("You have been blacklisted", style="error")
+        error_console.log("You have been blacklisted", style="error")
         exit(EXIT_FAILURE)
     if (rep.status_code == requests.codes.ok):
         console.log("Succeessfully registerd to " + module, style="success")
         return True
-    if (rep.status_code == requests.codes.unauthorized): # Useless because the intra uses 403 instead, but it's there in case of they improve it lmao
-        console.log("Invalid auth token.", style="error")
+    # Useless because the intra uses 403, there in case of they improve lmao
+    if (rep.status_code == requests.codes.unauthorized):
+        error_console.log("Invalid auth token.", style="error")
     if (rep.status_code == requests.codes.not_found):
-        console.log("This is not the module you are looking for.", style="error")
+        console.log("This is not the module you are looking for.", style="warning")
     else:
-        console.log("Failed to register to " + module + " (code " + str(rep.status_code) + ")", style="error")
+        console.log("Failed to register to " + module + " (code " + str(rep.status_code) + ")", style="warning")
     return False
 
 
@@ -65,7 +73,7 @@ def main(args):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('modules', type=str, nargs="+")
+    parser.add_argument('modules', type=str, nargs="+", help="code of the module (ex: M-GAM-907/PAR-9-3)")
     parser.add_argument('-c', "--cookies", type=str, help='auth cookies for the requests', required=True)
     parser.add_argument('-y', "--year", type=str, help='year of the module', required=True)
     parser.add_argument('-t', "--time", type=int, help='delay in sec between each try (default 120)', default=DEFAULT_TIME)
@@ -74,4 +82,4 @@ if __name__ == "__main__":
     try:
         main(args)
     except KeyboardInterrupt:
-        console.log("Manual interrupt", style="green")
+        console.log("Manual interrupt", style="bold red")
