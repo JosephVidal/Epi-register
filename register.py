@@ -74,4 +74,4 @@ if __name__ == "__main__":
     try:
         main(args)
     except KeyboardInterrupt:
-        console.log("Manual interrupt", style="error")
+        console.log("Manual interrupt", style="green")
