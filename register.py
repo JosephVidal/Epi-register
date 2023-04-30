@@ -41,25 +41,25 @@ def register(session, url, cookies, payload, module):
 
 
 def main(args):
-    cookies = args.c.split(";")
+    cookies = args.cookies.split(";")
     payload = {}
     session = requests.Session()
     step = 0
 
-    console.log(f"Timer: {args.t} seconds", style="neutral")
+    console.log(f"Timer: {args.time} seconds", style="neutral")
     with console.status("[bold green]Progressing..."):
         while 1:
             step = step + 1
             console.log("try " + str(step), style="success")
             for elem in args.modules:
-                url = "https://intra.epitech.eu/module/" + args.y + "/" + elem + "/register?format=json"
+                url = "https://intra.epitech.eu/module/" + args.year + "/" + elem + "/register?format=json"
 
                 if register(session, url, cookies, payload, elem):
                     args.modules.remove(elem)
-                sleep(args.d)
+                sleep(args.delay)
             if (len(args.modules) == 0):
                 break
-            sleep(args.t)
+            sleep(args.time)
     console.log('Done!', style="success")
 
 
